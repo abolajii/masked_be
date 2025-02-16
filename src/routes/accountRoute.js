@@ -4,6 +4,7 @@ const {
   deleteDeposit,
   addDeposit,
   getSignalsForTheDay,
+  getTotalProfitFromSignal,
 } = require("../controller/accountController");
 const { verifyToken } = require("../middleware");
 
@@ -12,6 +13,7 @@ const router = require("express").Router();
 router.get("/update-capital", [verifyToken], updateCapital);
 
 router.get("/signal", [verifyToken], getSignalsForTheDay);
+router.get("/signal/stats", [verifyToken], getTotalProfitFromSignal);
 
 router.get("/deposits", [verifyToken], getAllDeposits);
 

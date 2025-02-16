@@ -420,3 +420,29 @@ exports.deleteDeposit = async (req, res) => {
     });
   }
 };
+
+exports.getTotalProfitFromSignal = async (req, res) => {
+  // get total_profit, average_profit
+  try {
+    const user = req.user.id;
+    const signals = await Signal.find({ user });
+
+    let totalProfit = 0;
+    let averageProfit = 0;
+
+    signals.forEach((signal) => {
+      totalProfit += signal.profit;
+    });
+
+    averageProfit = totalProfit / signals.length;
+
+    res.json({
+      success: true,
+      total_profit: totalProfit,
+      average_profit: averageProfit,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, error: "Internal server error" });
+  }
+};
