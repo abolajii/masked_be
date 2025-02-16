@@ -15,8 +15,8 @@ const {
 } = require("../utils");
 const Deposit = require("../model/Deposit");
 
-const adminId = "67b1b79064d6b507fcb57b92";
-const innocenctId = "67b1b7a1a5c6ad97ebc63701";
+const adminId = "67b1b9eb5a957bd9c5ddd100";
+const innocenctId = "67b1b9fae65153f9c4e02498";
 
 exports.updateCapital = async (req, res) => {
   try {

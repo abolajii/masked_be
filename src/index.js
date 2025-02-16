@@ -73,8 +73,8 @@ const AllUsers = async () => {
   console.log("All data deleted");
 };
 
-const adminId = "67b1b79064d6b507fcb57b92";
-const innocenctId = "67b1b7a1a5c6ad97ebc63701";
+const adminId = "67b1b9eb5a957bd9c5ddd100";
+const innocenctId = "67b1b9fae65153f9c4e02498";
 
 // localUpdateCapital();
 
@@ -110,7 +110,7 @@ const d2 = {
 };
 
 // deleteAllUsers();
-AllUsers();
+// AllUsers();
 // createUser(d2);
 
 const PORT = process.env.PORT || 3001;
