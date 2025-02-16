@@ -114,12 +114,12 @@ const d2 = {
 // createUser(d2);
 // localUpdateCapital();
 
-const findOneAndUpdate = async (id) => {
-  const user = await User.findById(id);
-  console.log(user);
-};
+// const findOneAndUpdate = async (id) => {
+//   const user = await User.findById(id);
+//   console.log(user);
+// };
 
-findOneAndUpdate(adminId);
+// findOneAndUpdate(adminId);
 
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
