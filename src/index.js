@@ -49,7 +49,7 @@ app.use(express.json());
 app.use("/api/v1", authRoute);
 app.use("/api/v1", accountRoute);
 
-app.get("/api/v1/status", (req, res) => {
+app.get("/api/v1", (req, res) => {
   res.json({ success: true, message: "Server is running" });
 });
 
