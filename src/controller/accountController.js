@@ -15,8 +15,8 @@ const {
 } = require("../utils");
 const Deposit = require("../model/Deposit");
 
-const adminId = "67b0ebbe3bd7d7fcd07451ac";
-const innocenctId = "67b176b37754b28a1c8730e8";
+const adminId = "67b1b0eaa2091ab6c9306ca8";
+const innocenctId = "67b1b0f0063aeb4f8eb626e9";
 
 exports.updateCapital = async (req, res) => {
   try {
@@ -257,7 +257,7 @@ exports.localGetSignalsForTheDay = async () => {
 
 exports.addDeposit = async (req, res) => {
   try {
-    const user = adminId;
+    const user = req.user.id;
     const { amount, date, bonus, whenDeposited } = req.body;
 
     if (!user || !amount) {
@@ -280,6 +280,23 @@ exports.addDeposit = async (req, res) => {
         error: deposit.error,
       });
     }
+
+    if (!deposit.success) {
+      console.error("Failed to add deposit");
+      return;
+    }
+
+    const logged = await User.findOne({ _id: user });
+
+    if (whenDeposited === "before-trade") {
+      if (checkIfTodayIsSunday()) {
+        logged.weekly_capital += amount;
+      }
+    }
+
+    logged.running_capital += amount;
+
+    await logged.save();
 
     res.json({ success: true, deposit });
   } catch (error) {
@@ -304,6 +321,18 @@ exports.localAddDeposit = async ({ amount, date, bonus, whenDeposited }) => {
       return;
     }
 
+    const logged = await User.findOne({ _id: user });
+
+    if (whenDeposited === "before-trade") {
+      if (checkIfTodayIsSunday()) {
+        logged.weekly_capital += amount;
+      }
+    }
+
+    logged.running_capital += amount;
+
+    await logged.save();
+
     console.log("Deposit added successfully");
   } catch (error) {
     console.error(error);
@@ -320,5 +349,55 @@ exports.getAllDeposits = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, error: "Internal server error" });
+  }
+};
+
+exports.deleteDeposit = async (req, res) => {
+  try {
+    // Find the deposit first to get the amount
+    const deposit = await Deposit.findById(req.params.id);
+
+    if (!deposit) {
+      return res.status(404).json({
+        status: "fail",
+        message: "Deposit not found.",
+      });
+    }
+
+    // Remove the deposit amount from the user's starting capital
+    const user = await User.findByIdAndUpdate(
+      deposit.user,
+      { $inc: { ruuning_capital: -deposit.amount } }, // Subtract deposit amount
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({
+        status: "fail",
+        message: "User not found.",
+      });
+    }
+
+    if (deposit.whenDeposited === "before-trade") {
+      if (checkIfTodayIsSunday()) {
+        user.weekly_capital -= amount;
+      }
+    }
+
+    // Now delete the deposit record
+    await Deposit.findByIdAndDelete(req.params.id);
+
+    await user.save();
+
+    res.status(200).json({
+      status: "success",
+      message: "Deposit deleted successfully.",
+      data: { running_capital: user.running_capital }, // Return updated capital
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "fail",
+      message: error.message,
+    });
   }
 };

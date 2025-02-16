@@ -263,6 +263,32 @@ const createDepositForUser = async (
   }
 };
 
+const deleteDepositForUser = async (user, signalId) => {
+  try {
+    const deposit = await Deposit.findOneAndDelete({
+      _id: signalId,
+      user: user,
+    });
+
+    if (!deposit) {
+      throw new Error("Deposit not found");
+    }
+
+    console.log(deposit);
+
+    return {
+      success: true,
+      deposit,
+    };
+  } catch (error) {
+    console.log(error);
+    return {
+      success: false,
+      error: error.message,
+    };
+  }
+};
+
 module.exports = {
   createUser,
   createDailySignalForUser,
@@ -270,4 +296,5 @@ module.exports = {
   updateCapitalForUser,
   updateSignalForUser,
   createDepositForUser,
+  deleteDepositForUser,
 };

@@ -18,6 +18,7 @@ const accountRoute = require("./routes/accountRoute");
 
 const cors = require("cors");
 const { localAddDeposit } = require("./controller/accountController");
+const { createUser } = require("./helpers");
 const app = express();
 
 mongoose.connect(process.env.MONGODB_URI, {
@@ -55,31 +56,30 @@ app.get("/", (req, res) => {
 });
 
 const deleteAllUsers = async () => {
-  // await User.deleteMany();
-  // await Signal.deleteMany();
+  await User.deleteMany();
+  await Signal.deleteMany();
   await Deposit.deleteMany();
-  // await Revenue.deleteMany();
+  await Revenue.deleteMany();
 
   console.log("All data deleted");
 };
 
 const AllUsers = async () => {
   const users = await User.find();
+  const deposits = await Deposit.find();
   console.log(users);
+  console.log(deposits);
 
   console.log("All data deleted");
 };
 
-// AllUsers();
-
-// const adminId = "67b176cbcb9b7bbc365dd48b";
-// const innocenctId = "67b176b37754b28a1c8730e8";
+const adminId = "67b1b0eaa2091ab6c9306ca8";
+const innocenctId = "67b1b0f0063aeb4f8eb626e9";
 
 // localUpdateCapital();
 
 // createDailySignalForUser(innocenctId);
 
-// deleteAllUsers();
 // localGetSignalsForTheDay();
 
 // localAddDeposit({
@@ -109,7 +109,9 @@ const d2 = {
   running_capital: 350.8,
 };
 
-// createUser(d1);
+// deleteAllUsers();
+AllUsers();
+// createUser(d2);
 
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
