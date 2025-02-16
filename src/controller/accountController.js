@@ -24,6 +24,8 @@ exports.updateCapital = async (req, res) => {
     const { id } = req.user;
     const currentTime = moment();
 
+    console.log(currentTime);
+
     // // Check if current time falls within trading windows
     const isValidTradingTime = isWithinTradingWindow(currentTime);
     if (!isValidTradingTime) {

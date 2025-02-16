@@ -7,11 +7,11 @@ exports.isWithinTradingWindow = (currentTime) => {
 
   // Check 14:00-14:40 window
   const afternoonStart = 14 * 60; // 14:00
-  const afternoonEnd = 14 * 60 + 30; // 14:40
+  const afternoonEnd = 14 * 60 + 40; // 14:40
 
   // Check 19:00-19:30 window
   const eveningStart = 19 * 60; // 19:00
-  const eveningEnd = 19 * 60 + 30; // 19:30
+  const eveningEnd = 19 * 60 + 40; // 19:40
 
   return (
     (timeInMinutes >= afternoonStart && timeInMinutes <= afternoonEnd) ||
