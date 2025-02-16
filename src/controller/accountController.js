@@ -290,13 +290,15 @@ exports.addDeposit = async (req, res) => {
 
     if (tradeTime === "before-trade") {
       if (checkIfTodayIsSunday()) {
-        logged.weekly_capital += amount;
+        logged.weekly_capital += Number(amount);
       }
     }
 
-    logged.running_capital += amount;
+    logged.running_capital += Number(amount);
 
     await logged.save();
+
+    console.log(logged, amount);
 
     res.json({ success: true, deposit });
   } catch (error) {
