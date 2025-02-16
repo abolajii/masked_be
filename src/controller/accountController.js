@@ -2,6 +2,7 @@ const {
   createDepositForUser,
   updateCapitalForUser,
   updateSignalForUser,
+  createDailySignalForUser,
 } = require("../helpers");
 const Signal = require("../model/Signal");
 const moment = require("moment");
@@ -221,10 +222,24 @@ exports.getSignalsForTheDay = async (req, res) => {
 
     const user = await User.findOne({ _id: id });
 
-    const signals = await Signal.find({
+    let signals;
+
+    signals = await Signal.find({
       user,
       time: new RegExp(today, "i"), // Case insensitive search for today's date
     }).sort({ time: 1 });
+
+    if (signals.length === 0) {
+      const result = await createDailySignalForUser(user);
+      if (!result.success) {
+        return res.status(500).json({
+          success: false,
+          error: result.error,
+        });
+      }
+
+      signals = result.signals;
+    }
 
     res.json({ success: true, signals });
   } catch (error) {
@@ -239,14 +254,10 @@ exports.localGetSignalsForTheDay = async () => {
 
     const user = adminId;
 
-    const isSunday = checkIfTodayIsSunday();
-
     const signals = await Signal.find({
       user,
       time: new RegExp(today, "i"), // Case insensitive search for today's date
     }).sort({ time: 1 });
-
-    console.log(signals, isSunday);
 
     // res.json({ success: true, signals });
   } catch (error) {

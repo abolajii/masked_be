@@ -248,8 +248,6 @@ const createDepositForUser = async (
 
     await deposit.save();
 
-    console.log(deposit);
-
     return {
       success: true,
       deposit,
