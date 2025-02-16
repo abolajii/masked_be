@@ -17,6 +17,7 @@ const authRoute = require("./routes/authRoute");
 const accountRoute = require("./routes/accountRoute");
 
 const cors = require("cors");
+const { localAddDeposit } = require("./controller/accountController");
 const app = express();
 
 mongoose.connect(process.env.MONGODB_URI, {
@@ -54,10 +55,10 @@ app.get("/", (req, res) => {
 });
 
 const deleteAllUsers = async () => {
-  await User.deleteMany();
-  await Signal.deleteMany();
+  // await User.deleteMany();
+  // await Signal.deleteMany();
   await Deposit.deleteMany();
-  await Revenue.deleteMany();
+  // await Revenue.deleteMany();
 
   console.log("All data deleted");
 };
@@ -80,6 +81,13 @@ const AllUsers = async () => {
 
 // deleteAllUsers();
 // localGetSignalsForTheDay();
+
+// localAddDeposit({
+//   amount: 8.1089,
+//   date: new Date(),
+//   bonus: 0,
+//   whenDeposited: "before-trade",
+// });
 
 const d1 = {
   username: "admin",

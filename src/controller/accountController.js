@@ -13,6 +13,7 @@ const {
   isWithinTradingWindow,
   checkIfTodayIsSunday,
 } = require("../utils");
+const Deposit = require("../model/Deposit");
 
 const adminId = "67b0ebbe3bd7d7fcd07451ac";
 const innocenctId = "67b0ebf99545c7d910a4dfe8";
@@ -281,6 +282,41 @@ exports.addDeposit = async (req, res) => {
     }
 
     res.json({ success: true, deposit });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, error: "Internal server error" });
+  }
+};
+
+exports.localAddDeposit = async ({ amount, date, bonus, whenDeposited }) => {
+  try {
+    const user = innocenctId;
+
+    const deposit = await createDepositForUser(user, {
+      amount,
+      date,
+      bonus,
+      whenDeposited,
+    });
+
+    if (!deposit.success) {
+      console.error("Failed to add deposit");
+      return;
+    }
+
+    console.log("Deposit added successfully");
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+exports.getAllDeposits = async (req, res) => {
+  try {
+    const user = req.user.id;
+
+    const deposits = await Deposit.find({ user }).sort({ date: -1 });
+
+    res.json({ success: true, deposits });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, error: "Internal server error" });
