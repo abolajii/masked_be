@@ -49,6 +49,10 @@ app.use(express.json());
 app.use("/api/v1", authRoute);
 app.use("/api/v1", accountRoute);
 
+app.get("/api/v1/status", (req, res) => {
+  res.json({ success: true, message: "Server is running" });
+});
+
 const deleteAllUsers = async () => {
   await User.deleteMany();
   await Signal.deleteMany();
