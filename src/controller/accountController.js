@@ -367,7 +367,7 @@ exports.deleteDeposit = async (req, res) => {
     // Remove the deposit amount from the user's starting capital
     const user = await User.findByIdAndUpdate(
       deposit.user,
-      { $inc: { ruuning_capital: -deposit.amount } }, // Subtract deposit amount
+      { $inc: { running_capital: -deposit.amount } }, // Subtract deposit amount
       { new: true }
     );
 
