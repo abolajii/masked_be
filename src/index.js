@@ -73,8 +73,8 @@ const AllUsers = async () => {
   console.log("All data deleted");
 };
 
-const adminId = "67b1b9eb5a957bd9c5ddd100";
-const innocenctId = "67b1b9fae65153f9c4e02498";
+const adminId = "67b1bc98d981de5d7bd00023";
+const innocenctId = "67b1bca8a00bacd62f1e30ed";
 
 // localUpdateCapital();
 
