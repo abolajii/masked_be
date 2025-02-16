@@ -258,7 +258,7 @@ exports.localGetSignalsForTheDay = async () => {
 exports.addDeposit = async (req, res) => {
   try {
     const user = req.user.id;
-    const { amount, date, bonus, whenDeposited } = req.body;
+    const { amount, date, bonus, tradeTime } = req.body;
 
     if (!user || !amount) {
       return res.status(400).json({
@@ -271,7 +271,7 @@ exports.addDeposit = async (req, res) => {
       amount,
       date,
       bonus,
-      whenDeposited,
+      whenDeposited: tradeTime,
     });
 
     if (!deposit.success) {
