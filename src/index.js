@@ -72,7 +72,7 @@ const AllUsers = async () => {
   const signals = await Signal.find();
 
   // console.log(users);
-  console.log(signals);
+  // console.log(signals);
 };
 
 const adminId = "67b1bc98d981de5d7bd00023";
@@ -110,7 +110,7 @@ const d2 = {
 };
 
 // deleteAllUsers();
-AllUsers();
+// AllUsers();
 // createUser(d2);
 // localUpdateCapital();
 

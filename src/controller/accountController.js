@@ -20,19 +20,18 @@ const adminId = "67b1bc98d981de5d7bd00023";
 const innocenctId = "67b1bca8a00bacd62f1e30ed";
 
 exports.updateCapital = async (req, res) => {
-  console.log("Updating capital...");
   try {
     const { id } = req.user;
     const currentTime = moment();
 
     // // Check if current time falls within trading windows
-    // const isValidTradingTime = isWithinTradingWindow(currentTime);
-    // if (!isValidTradingTime) {
-    //   return res.status(400).json({
-    //     success: false,
-    //     error: "Trading is only allowed between 14:00-14:40 and 19:00-19:30",
-    //   });
-    // }
+    const isValidTradingTime = isWithinTradingWindow(currentTime);
+    if (!isValidTradingTime) {
+      return res.status(400).json({
+        success: false,
+        error: "Trading is only allowed between 14:00-14:40 and 19:00-19:30",
+      });
+    }
 
     // Get the appropriate time window for signal
     const timeWindow = getTimeWindowString(currentTime);
@@ -113,7 +112,7 @@ const enableTestMode = (timeString) => {
   );
 };
 
-enableTestMode("2025-02-16 14:30:00");
+// enableTestMode("2025-02-16 14:30:00");
 
 // Function to disable test mode
 exports.disableTestMode = () => {
