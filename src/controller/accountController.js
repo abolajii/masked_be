@@ -288,7 +288,7 @@ exports.addDeposit = async (req, res) => {
 
     const logged = await User.findOne({ _id: user });
 
-    if (whenDeposited === "before-trade") {
+    if (tradeTime === "before-trade") {
       if (checkIfTodayIsSunday()) {
         logged.weekly_capital += amount;
       }
@@ -301,7 +301,7 @@ exports.addDeposit = async (req, res) => {
     res.json({ success: true, deposit });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, error: "Internal server error" });
+    res.status(500).json({ success: false, error });
   }
 };
 
