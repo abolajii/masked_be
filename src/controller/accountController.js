@@ -380,7 +380,7 @@ exports.deleteDeposit = async (req, res) => {
 
     if (deposit.whenDeposited === "before-trade") {
       if (checkIfTodayIsSunday()) {
-        user.weekly_capital -= amount;
+        user.weekly_capital -= deposit.amount;
       }
     }
 
