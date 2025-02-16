@@ -17,7 +17,10 @@ const authRoute = require("./routes/authRoute");
 const accountRoute = require("./routes/accountRoute");
 
 const cors = require("cors");
-const { localAddDeposit } = require("./controller/accountController");
+const {
+  localAddDeposit,
+  localUpdateCapital,
+} = require("./controller/accountController");
 const { createUser } = require("./helpers");
 const app = express();
 
@@ -66,17 +69,14 @@ const deleteAllUsers = async () => {
 
 const AllUsers = async () => {
   const users = await User.find();
-  const deposits = await Deposit.find();
-  console.log(users);
-  console.log(deposits);
+  const signals = await Signal.find();
 
-  console.log("All data deleted");
+  // console.log(users);
+  console.log(signals);
 };
 
 const adminId = "67b1bc98d981de5d7bd00023";
 const innocenctId = "67b1bca8a00bacd62f1e30ed";
-
-// localUpdateCapital();
 
 // createDailySignalForUser(innocenctId);
 
@@ -110,8 +110,9 @@ const d2 = {
 };
 
 // deleteAllUsers();
-// AllUsers();
+AllUsers();
 // createUser(d2);
+// localUpdateCapital();
 
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {

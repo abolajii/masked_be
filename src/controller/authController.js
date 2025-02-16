@@ -63,8 +63,6 @@ exports.getCurrentUser = async (req, res) => {
       // Get last Saturday's date
       const lastSaturday = getLastSaturdayDate();
 
-      console.log(lastSaturday);
-
       // Find the last completed signal from Saturday
       const lastSignal = await Signal.findOne({
         user: req.user.id,
@@ -91,8 +89,6 @@ exports.getCurrentUser = async (req, res) => {
         console.log(
           `Updated Sunday's capital based on Saturday's final signal: ${lastSignal.finalCapital}`
         );
-      } else {
-        console.log("No completed signals found from last Saturday");
       }
     }
 
