@@ -24,24 +24,48 @@ exports.updateCapital = async (req, res) => {
     const { id } = req.user;
     const currentTime = moment();
 
-    console.log(currentTime);
+    // Define the trading windows
+    const morningWindow = {
+      start: moment().set({ hour: 14, minute: 0 }),
+      end: moment().set({ hour: 14, minute: 30 }),
+    };
 
-    // // Check if current time falls within trading windows
-    const isValidTradingTime = isWithinTradingWindow(currentTime);
-    if (!isValidTradingTime) {
+    const eveningWindow = {
+      start: moment().set({ hour: 19, minute: 0 }),
+      end: moment().set({ hour: 19, minute: 30 }),
+    };
+
+    // Check if current time is within either trading window
+    const isWithinMorningWindow = currentTime.isBetween(
+      morningWindow.start,
+      morningWindow.end,
+      "minute",
+      "[]"
+    );
+    const isWithinEveningWindow = currentTime.isBetween(
+      eveningWindow.start,
+      eveningWindow.end,
+      "minute",
+      "[]"
+    );
+
+    if (!isWithinMorningWindow && !isWithinEveningWindow) {
       return res.status(400).json({
         success: false,
-        error: "Trading is only allowed between 14:00-14:40 and 19:00-19:30",
+        error:
+          "Trading can only be done during designated time windows (14:00-14:30 or 19:00-19:30)",
       });
     }
 
-    // Get the appropriate time window for signal
-    const timeWindow = getTimeWindowString(currentTime);
+    // Determine the current time window for the signal
+    const timeZone = isWithinMorningWindow
+      ? `${moment().format("YYYY-MM-DD")} 14:00 - 14:30`
+      : `${moment().format("YYYY-MM-DD")} 19:00 - 19:30`;
 
     // Find active signal for current time window
     const activeSignal = await Signal.findOne({
       user: id,
-      time: timeWindow,
+      time: timeZone,
       status: "not-started",
     });
 
@@ -96,7 +120,6 @@ exports.updateCapital = async (req, res) => {
     res.status(500).json({ success: false, error: "Internal server error" });
   }
 };
-
 // Testing configuration object
 let testConfig = {
   isTestMode: false,
