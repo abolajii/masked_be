@@ -116,10 +116,12 @@ const d2 = {
 
 // const findOneAndUpdate = async (id) => {
 //   const user = await User.findById(id);
+//   user.running_capital = 378.28;
+//   await user.save();
 //   console.log(user);
 // };
 
-// findOneAndUpdate(adminId);
+// findOneAndUpdate(innocenctId);
 
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {

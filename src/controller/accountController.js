@@ -26,13 +26,13 @@ exports.updateCapital = async (req, res) => {
 
     // Define the trading windows
     const morningWindow = {
-      start: moment().set({ hour: 14, minute: 0 }),
-      end: moment().set({ hour: 14, minute: 30 }),
+      start: moment().set({ hour: 14, minute: 30 }),
+      end: moment().set({ hour: 16, minute: 0 }),
     };
 
     const eveningWindow = {
-      start: moment().set({ hour: 19, minute: 0 }),
-      end: moment().set({ hour: 19, minute: 30 }),
+      start: moment().set({ hour: 19, minute: 30 }),
+      end: moment().set({ hour: 20, minute: 0 }),
     };
 
     // Check if current time is within either trading window
