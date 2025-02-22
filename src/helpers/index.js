@@ -287,6 +287,23 @@ const deleteDepositForUser = async (user, signalId) => {
   }
 };
 
+const getRevenueForUser = async (user) => {
+  try {
+    const revenues = await Revenue.find({ user });
+
+    if (!revenues) {
+      return res
+        .status(404)
+        .json({ success: false, message: "No revenues found" });
+    }
+
+    // res.json({ success: true, data: revenues });
+  } catch (error) {
+    console.error("Error fetching revenues:", error.message);
+    // res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
 module.exports = {
   createUser,
   createDailySignalForUser,
@@ -295,4 +312,5 @@ module.exports = {
   updateSignalForUser,
   createDepositForUser,
   deleteDepositForUser,
+  getRevenueForUser,
 };

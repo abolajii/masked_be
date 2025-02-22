@@ -12,6 +12,7 @@ const userSchema = new Schema({
   last_login: { type: Date },
   starting_capital: { type: Number, required: true },
   weekly_capital: { type: Number, required: true },
+  monthly_capital: { type: Number },
   running_capital: { type: Number, required: true },
 });
 

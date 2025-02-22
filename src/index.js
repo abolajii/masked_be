@@ -75,9 +75,6 @@ const AllUsers = async () => {
   // console.log(signals);
 };
 
-const adminId = "67b1bc98d981de5d7bd00023";
-const innocenctId = "67b1bca8a00bacd62f1e30ed";
-
 // createDailySignalForUser(innocenctId);
 
 // localGetSignalsForTheDay();
@@ -109,20 +106,148 @@ const d2 = {
   running_capital: 350.8,
 };
 
-// deleteAllUsers();
-// AllUsers();
-// createUser(d2);
-// localUpdateCapital();
+const findOneAndUpdate = async (id) => {
+  // const user = await Revenue.deleteMany();
+  // console.log(user);
+};
 
-// const findOneAndUpdate = async (id) => {
-//   const user = await User.findById(id);
-//   user.running_capital = 378.28;
-//   await user.save();
-//   console.log(user);
+// findOneAndUpdate();
+
+const adminId = "67b1bc98d981de5d7bd00023";
+const innocentId = "67b1bca8a00bacd62f1e30ed";
+// const createRevenueForUsers = async () => {
+
+//   try {
+//     // First, drop the existing single-field index on month
+//     await Revenue.collection.dropIndex("month_1");
+//   } catch (error) {
+//     // If the index doesn't exist, that's fine
+//     console.log("No existing month index to drop");
+//   }
+
+//   try {
+//     // Create the new compound index
+//     await Revenue.collection.createIndex(
+//       { month: 1, year: 1, user: 1 },
+//       { unique: true }
+//     );
+//   } catch (error) {
+//     console.log(
+//       "Compound index already exists or error creating:",
+//       error.message
+//     );
+//   }
+
+//   const months = [
+//     "January",
+//     "February",
+//     "March",
+//     "April",
+//     "May",
+//     "June",
+//     "July",
+//     "August",
+//     "September",
+//     "October",
+//     "November",
+//     "December",
+//   ];
+
+//   const users = [adminId, innocentId];
+
+//   for (const userId of users) {
+//     for (const month of months) {
+//       try {
+//         // Check if record already exists using all three fields
+//         const existingRecord = await Revenue.findOne({
+//           month,
+//           year: 2025,
+//           user: userId,
+//         });
+
+//         if (!existingRecord) {
+//           const revenue = await Revenue.create({
+//             month,
+//             year: 2025,
+//             total_deposit: 0,
+//             total_withdrawal: 0,
+//             total_profit: 0,
+//             total_revenue: 0,
+//             user: userId,
+//           });
+
+//           console.log(`Revenue for ${month} 2025 created for user ${userId}`);
+//         } else {
+//           console.log(
+//             `Revenue record for ${month} 2025 already exists for user ${userId}`
+//           );
+//         }
+//       } catch (error) {
+//         console.error(
+//           `Error creating revenue for ${month} for user ${userId}:`,
+//           error.message
+//         );
+
+//         // Log the full error object for debugging
+//         console.error("Full error:", error);
+//       }
+//     }
+//   }
 // };
 
-// findOneAndUpdate(innocenctId);
+// Execute the function
+// createRevenueForUsers()
+//   .then(() => console.log("Finished creating revenue records"))
+//   .catch((error) => console.error("Top level error:", error));
 
+// // Execute the function
+// // createRevenueForUsers().catch(console.error);
+
+// createRevennueForUser(adminId);
+
+// const updateUsers = async () => {
+//   //
+//   const adminId = "67b1bc98d981de5d7bd00023";
+//   const innocentId = "67b1bca8a00bacd62f1e30ed";
+
+//   //
+//   const data = {
+//     weekly_capital: {
+//       admin: 2549.97,
+//       innocent: 405.91,
+//     },
+//     monthly_capital: {
+//       admin: 2549.97,
+//       innocent: 405.91,
+//     },
+//     running_capital: {
+//       admin: 2549.97,
+//       innocent: 405.91,
+//     },
+//   };
+
+//   // Update admin
+//   await User.findByIdAndUpdate(adminId, {
+//     weekly_capital: data.weekly_capital.admin,
+//     monthly_capital: data.monthly_capital.admin,
+//     running_capital: data.running_capital.admin,
+//   });
+
+//   // Update innocent
+//   await User.findByIdAndUpdate(innocentId, {
+//     weekly_capital: data.weekly_capital.innocent,
+//     monthly_capital: data.monthly_capital.innocent,
+//     running_capital: data.running_capital.innocent,
+//   });
+
+//   console.log("Users updated successfully");
+// };
+
+// updateUsers();
+
+// getRevenueForUser(adminId);
+
+//
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

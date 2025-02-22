@@ -120,44 +120,22 @@ exports.updateCapital = async (req, res) => {
     res.status(500).json({ success: false, error: "Internal server error" });
   }
 };
-// Testing configuration object
-let testConfig = {
-  isTestMode: false,
-  testTime: null,
-};
 
-// Function to enable test mode and set custom time
-const enableTestMode = (timeString) => {
-  testConfig.isTestMode = true;
-  testConfig.testTime = moment(timeString);
-  console.log(
-    `Test mode enabled. Current test time: ${testConfig.testTime.format(
-      "YYYY-MM-DD HH:mm:ss"
-    )}`
-  );
-};
+exports.getRevenue = async (req, res) => {
+  try {
+    const revenues = await Revenue.find({});
 
-// enableTestMode("2025-02-16 14:30:00");
+    if (!revenues) {
+      return res
+        .status(404)
+        .json({ success: false, message: "No revenues found" });
+    }
 
-// Function to disable test mode
-exports.disableTestMode = () => {
-  testConfig.isTestMode = false;
-  testConfig.testTime = null;
-  console.log("Test mode disabled. Using real time.");
-};
-
-// Function to adjust test time
-exports.adjustTestTime = (amount, unit) => {
-  if (!testConfig.isTestMode) {
-    console.log("Please enable test mode first");
-    return;
+    res.json({ success: true, data: revenues });
+  } catch (error) {
+    console.error("Error fetching revenues:", error.message);
+    res.status(500).json({ success: false, message: "Server error" });
   }
-  testConfig.testTime.add(amount, unit);
-  console.log(
-    `Test time adjusted to: ${testConfig.testTime.format(
-      "YYYY-MM-DD HH:mm:ss"
-    )}`
-  );
 };
 
 exports.localUpdateCapital = async () => {
@@ -231,15 +209,6 @@ exports.localUpdateCapital = async () => {
   } catch (error) {
     console.error(error);
   }
-};
-
-// Helper function to check current test time
-exports.getCurrentTestTime = () => {
-  if (!testConfig.isTestMode) {
-    console.log("Test mode is not enabled");
-    return null;
-  }
-  return testConfig.testTime.format("YYYY-MM-DD HH:mm:ss");
 };
 
 exports.updateSignalStatus = async (req, res) => {};
@@ -450,6 +419,8 @@ exports.getTotalProfitFromSignal = async (req, res) => {
     const user = req.user.id;
     const signals = await Signal.find({ user });
 
+    const completed = signals.filter((signal) => signal.status === "completed");
+
     let totalProfit = 0;
     let averageProfit = 0;
 
@@ -457,7 +428,7 @@ exports.getTotalProfitFromSignal = async (req, res) => {
       totalProfit += signal.profit;
     });
 
-    averageProfit = totalProfit / signals.length;
+    averageProfit = totalProfit / completed.length;
 
     res.json({
       success: true,
