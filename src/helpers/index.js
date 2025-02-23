@@ -243,7 +243,7 @@ const createDepositForUser = async (
       amount,
       bonus,
       whenDeposited,
-      createdAt: date,
+      date,
     });
 
     await deposit.save();

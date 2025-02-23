@@ -318,10 +318,21 @@ exports.addDeposit = async (req, res) => {
   }
 };
 
-exports.localAddDeposit = async ({ amount, date, bonus, whenDeposited }) => {
+exports.localAddDeposit = async ({
+  amount,
+  date,
+  bonus,
+  whenDeposited,
+  user,
+}) => {
+  console.log({
+    amount,
+    date,
+    bonus,
+    whenDeposited,
+    user,
+  });
   try {
-    const user = innocenctId;
-
     const deposit = await createDepositForUser(user, {
       amount,
       date,
@@ -337,7 +348,7 @@ exports.localAddDeposit = async ({ amount, date, bonus, whenDeposited }) => {
     const logged = await User.findOne({ _id: user });
 
     if (whenDeposited === "before-trade") {
-      if (checkIfTodayIsSunday()) {
+      if (checkIfTodayIsSunday(date)) {
         logged.weekly_capital += amount;
       }
     }

@@ -45,7 +45,7 @@ exports.calculateProfit = (recentCapital) => {
   };
 };
 
-exports.checkIfTodayIsSunday = () => {
-  const today = moment();
+exports.checkIfTodayIsSunday = (date) => {
+  const today = moment(date);
   return today.day() === 0;
 };

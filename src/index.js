@@ -106,15 +106,23 @@ const d2 = {
   running_capital: 350.8,
 };
 
+const adminId = "67b1bc98d981de5d7bd00023";
+const innocentId = "67b1bca8a00bacd62f1e30ed";
+
+// localAddDeposit({
+//   amount: 8.1089,
+//   date: new Date("2022-02-01"),
+//   bonus: 0,
+//   whenDeposited: "before-trade",
+//   user: adminId,
+// });
+
 const findOneAndUpdate = async (id) => {
-  // const user = await Revenue.deleteMany();
-  // console.log(user);
+  const user = await Deposit.deleteMany({ user: adminId });
+  console.log(user);
 };
 
 // findOneAndUpdate();
-
-const adminId = "67b1bc98d981de5d7bd00023";
-const innocentId = "67b1bca8a00bacd62f1e30ed";
 // const createRevenueForUsers = async () => {
 
 //   try {

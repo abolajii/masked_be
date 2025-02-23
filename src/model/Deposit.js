@@ -12,7 +12,6 @@ const depositSchema = new mongoose.Schema({
   date: {
     type: Date,
     required: true,
-    default: Date.now,
   },
   bonus: {
     type: Number,
