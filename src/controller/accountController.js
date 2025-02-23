@@ -15,6 +15,7 @@ const {
   checkIfTodayIsSunday,
 } = require("../utils");
 const Deposit = require("../model/Deposit");
+const Revenue = require("../model/Revenue");
 
 const adminId = "67b1bc98d981de5d7bd00023";
 const innocenctId = "67b1bca8a00bacd62f1e30ed";
@@ -122,8 +123,9 @@ exports.updateCapital = async (req, res) => {
 };
 
 exports.getRevenue = async (req, res) => {
+  const user = req.user.id;
   try {
-    const revenues = await Revenue.find({});
+    const revenues = await Revenue.find({ user });
 
     if (!revenues) {
       return res
