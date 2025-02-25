@@ -6,6 +6,7 @@ const {
   getSignalsForTheDay,
   getTotalProfitFromSignal,
   getRevenue,
+  getAllWithdraws,
 } = require("../controller/accountController");
 const { verifyToken } = require("../middleware");
 
@@ -18,6 +19,8 @@ router.get("/signal", [verifyToken], getSignalsForTheDay);
 router.get("/signal/stats", [verifyToken], getTotalProfitFromSignal);
 
 router.get("/deposits", [verifyToken], getAllDeposits);
+
+router.get("/withdraw", [verifyToken], getAllWithdraws);
 
 router.get("/revenue", [verifyToken], getRevenue);
 

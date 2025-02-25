@@ -22,6 +22,7 @@ const {
   localUpdateCapital,
 } = require("./controller/accountController");
 const { createUser } = require("./helpers");
+const Withdraw = require("./model/Withdraw");
 const app = express();
 
 mongoose.connect(process.env.MONGODB_URI, {
@@ -213,47 +214,97 @@ const findOneAndUpdate = async (id) => {
 
 // createRevennueForUser(adminId);
 
-// const updateUsers = async () => {
-//   //
-//   const adminId = "67b1bc98d981de5d7bd00023";
-//   const innocentId = "67b1bca8a00bacd62f1e30ed";
+const data = {
+  // weekly_capital: {
+  //   admin: 2549.97,
+  //   innocent: 405.91,
+  // },
+  // monthly_capital: {
+  //   admin: 2549.97,
+  //   innocent: 405.91,
+  // },
+  // running_capital: {
+  //   admin: 700.92,
+  //   innocent: 420.39,
+  // },
 
-//   //
-//   const data = {
-//     weekly_capital: {
-//       admin: 2549.97,
-//       innocent: 405.91,
-//     },
-//     monthly_capital: {
-//       admin: 2549.97,
-//       innocent: 405.91,
-//     },
-//     running_capital: {
-//       admin: 2549.97,
-//       innocent: 405.91,
-//     },
-//   };
+  widthdraw: {
+    admin: {
+      amount: 700,
+      date: "2025-03-09",
+      whenWithdraw: "inbetween-trade",
+    },
+  },
+};
 
-//   // Update admin
-//   await User.findByIdAndUpdate(adminId, {
-//     weekly_capital: data.weekly_capital.admin,
-//     monthly_capital: data.monthly_capital.admin,
-//     running_capital: data.running_capital.admin,
-//   });
+// const adminId = "67b1bc98d981de5d7bd00023";
+// const innocentId = "67b1bca8a00bacd62f1e30ed";
 
-//   // Update innocent
-//   await User.findByIdAndUpdate(innocentId, {
-//     weekly_capital: data.weekly_capital.innocent,
-//     monthly_capital: data.monthly_capital.innocent,
-//     running_capital: data.running_capital.innocent,
-//   });
+const updateUsers = async () => {
+  //
 
-//   console.log("Users updated successfully");
-// };
+  //
+
+  await Revenue.findOneAndUpdate(
+    { user: adminId, month: "February" },
+    {
+      // weekly_capital: data.weekly_capital.admin,
+      // monthly_capital: data.monthly_capital.admin,
+      total_revenue: data.running_capital.admin,
+    }
+  );
+
+  await Revenue.findOneAndUpdate(
+    { user: innocentId, month: "February" },
+    {
+      // weekly_capital: data.weekly_capital.admin,
+      // monthly_capital: data.monthly_capital.admin,
+      total_revenue: data.running_capital.innocent,
+    }
+  );
+
+  // Update admin
+  await User.findByIdAndUpdate(adminId, {
+    // weekly_capital: data.weekly_capital.admin,
+    // monthly_capital: data.monthly_capital.admin,
+    running_capital: data.running_capital.admin,
+  });
+
+  // Update innocent
+  await User.findByIdAndUpdate(innocentId, {
+    // weekly_capital: data.weekly_capital.innocent,
+    // monthly_capital: data.monthly_capital.innocent,
+    running_capital: data.running_capital.innocent,
+  });
+
+  console.log("Users updated successfully");
+};
 
 // updateUsers();
 
 // getRevenueForUser(adminId);
+
+const createWithdrawForUser = async (user) => {
+  const withdrawal = await Withdraw.create({
+    amount: data.widthdraw.admin.amount,
+    date: new Date(data.widthdraw.admin.date),
+    whenWithdraw: data.widthdraw.admin.whenWithdraw,
+    user: user,
+  });
+
+  await withdrawal.save();
+
+  console.log(`Withdrawal created for ${user}`, withdrawal);
+};
+
+const getAllWithdraws = async () => {
+  const withdrawals = await Withdraw.find({});
+
+  console.log("All withdrawals:", withdrawals);
+};
+
+getAllWithdraws();
+// createWithdrawForUser(adminId);
 
 //
 const PORT = process.env.PORT || 3001;

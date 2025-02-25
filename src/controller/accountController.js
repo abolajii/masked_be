@@ -16,6 +16,7 @@ const {
 } = require("../utils");
 const Deposit = require("../model/Deposit");
 const Revenue = require("../model/Revenue");
+const Withdraw = require("../model/Withdraw");
 
 const adminId = "67b1bc98d981de5d7bd00023";
 const innocenctId = "67b1bca8a00bacd62f1e30ed";
@@ -370,6 +371,19 @@ exports.getAllDeposits = async (req, res) => {
     const deposits = await Deposit.find({ user }).sort({ date: -1 });
 
     res.json({ success: true, deposits });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, error: "Internal server error" });
+  }
+};
+
+exports.getAllWithdraws = async (req, res) => {
+  try {
+    const user = req.user.id;
+
+    const widthdraw = await Withdraw.find({ user }).sort({ date: -1 });
+
+    res.json({ success: true, widthdraw });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, error: "Internal server error" });
