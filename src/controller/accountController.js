@@ -383,7 +383,7 @@ exports.getAllWithdraws = async (req, res) => {
 
     const widthdraw = await Withdraw.find({ user }).sort({ date: -1 });
 
-    res.json({ success: true, widthdraw });
+    res.json({ success: true, withdraw });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, error: "Internal server error" });
