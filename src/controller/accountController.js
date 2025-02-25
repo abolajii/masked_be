@@ -381,7 +381,7 @@ exports.getAllWithdraws = async (req, res) => {
   try {
     const user = req.user.id;
 
-    const widthdraw = await Withdraw.find({ user }).sort({ date: -1 });
+    const withdraw = await Withdraw.find({ user }).sort({ date: -1 });
 
     res.json({ success: true, withdraw });
   } catch (error) {
