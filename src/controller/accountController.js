@@ -406,7 +406,7 @@ exports.createWithdraw = async (req, res) => {
     const withdraw = await createWithdrawForUser(user, {
       amount,
       date,
-      whenWithdrawed: whenWithdraw,
+      whenWithdraw,
     });
 
     if (!withdraw.success) {

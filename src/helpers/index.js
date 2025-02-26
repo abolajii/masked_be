@@ -329,6 +329,8 @@ const createWithdrawForUser = async (user, { amount, date, whenWithdraw }) => {
   }
 };
 
+const deleteWithdrawForUser = (user, withdrawid) => {};
+
 module.exports = {
   createUser,
   createDailySignalForUser,
