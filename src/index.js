@@ -255,6 +255,34 @@ const getAllWithdraws = async () => {
 
 // updateMissedSignals();
 
+const deleteWithdrawForUser = async (user, withdrawid) => {
+  try {
+    const withdraw = await Withdraw.findOneAndDelete({
+      amount: withdrawid,
+      user: user,
+    });
+
+    if (!withdraw) {
+      throw new Error("Withdrawal not found");
+    }
+
+    console.log(withdraw);
+
+    return {
+      success: true,
+      withdraw,
+    };
+  } catch (error) {
+    console.log(error);
+    return {
+      success: false,
+      error: error.message,
+    };
+  }
+};
+
+// deleteWithdrawForUser(adminId, 89);
+
 cron.schedule("35 14,19 * * *", updateSignalsForAllUsers);
 // updateSignalsForAllUsers();
 

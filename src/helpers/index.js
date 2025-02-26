@@ -329,7 +329,31 @@ const createWithdrawForUser = async (user, { amount, date, whenWithdraw }) => {
   }
 };
 
-const deleteWithdrawForUser = (user, withdrawid) => {};
+const deleteWithdrawForUser = async (user, withdrawid) => {
+  try {
+    const withdraw = await Withdraw.findOneAndDelete({
+      _id: withdrawid,
+      user: user,
+    });
+
+    if (!withdraw) {
+      throw new Error("Withdrawal not found");
+    }
+
+    console.log(withdraw);
+
+    return {
+      success: true,
+      withdraw,
+    };
+  } catch (error) {
+    console.log(error);
+    return {
+      success: false,
+      error: error.message,
+    };
+  }
+};
 
 module.exports = {
   createUser,
@@ -341,4 +365,5 @@ module.exports = {
   deleteDepositForUser,
   getRevenueForUser,
   createWithdrawForUser,
+  deleteWithdrawForUser,
 };

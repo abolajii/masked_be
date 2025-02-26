@@ -8,6 +8,7 @@ const {
   getRevenue,
   getAllWithdraws,
   createWithdraw,
+  deletWithdraw,
 } = require("../controller/accountController");
 const { verifyToken } = require("../middleware");
 
@@ -30,5 +31,7 @@ router.post("/add/deposit", [verifyToken], addDeposit);
 router.post("/withdraw", [verifyToken], createWithdraw);
 
 router.delete("/delete/deposit/:id", [verifyToken], deleteDeposit);
+
+router.delete("/delete/withdrawal/:id", [verifyToken], deletWithdraw);
 
 module.exports = router;

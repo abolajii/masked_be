@@ -4,6 +4,7 @@ const {
   updateSignalForUser,
   createDailySignalForUser,
   createWithdrawForUser,
+  deleteWithdrawForUser,
 } = require("../helpers");
 const Signal = require("../model/Signal");
 const moment = require("moment");
@@ -431,6 +432,27 @@ exports.createWithdraw = async (req, res) => {
     res.json({ success: true, withdraw });
   } catch (e) {
     console.error(e);
+    res.status(500).json({ success: false, error: "Internal server error" });
+  }
+};
+
+exports.deletWithdraw = async (req, res) => {
+  const id = req.params.id;
+  const user = req.user.id;
+
+  try {
+    const withdraw = await deleteWithdrawForUser(user, id);
+
+    if (!withdraw.success) {
+      return res.status(500).json({
+        success: false,
+        error: withdraw.error,
+      });
+    }
+
+    res.json({ success: true, message: "Withdrawal deleted successfully" });
+  } catch (err) {
+    console.error(err);
     res.status(500).json({ success: false, error: "Internal server error" });
   }
 };
