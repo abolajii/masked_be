@@ -244,19 +244,6 @@ const updateUsers = async () => {
 
 // getRevenueForUser(adminId);
 
-const createWithdrawForUser = async (user) => {
-  const withdrawal = await Withdraw.create({
-    amount: data.widthdraw.admin.amount,
-    date: new Date(data.widthdraw.admin.date),
-    whenWithdraw: data.widthdraw.admin.whenWithdraw,
-    user: user,
-  });
-
-  await withdrawal.save();
-
-  console.log(`Withdrawal created for ${user}`, withdrawal);
-};
-
 const getAllWithdraws = async () => {
   const withdrawals = await Withdraw.find({});
 

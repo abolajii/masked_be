@@ -310,7 +310,6 @@ const createWithdrawForUser = async (user, { amount, date, whenWithdraw }) => {
     const withdraw = new Withdraw({
       user,
       amount,
-      bonus,
       whenWithdraw,
       date,
     });
