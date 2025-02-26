@@ -7,6 +7,7 @@ const {
   getTotalProfitFromSignal,
   getRevenue,
   getAllWithdraws,
+  createWithdraw,
 } = require("../controller/accountController");
 const { verifyToken } = require("../middleware");
 
@@ -25,6 +26,8 @@ router.get("/withdraw", [verifyToken], getAllWithdraws);
 router.get("/revenue", [verifyToken], getRevenue);
 
 router.post("/add/deposit", [verifyToken], addDeposit);
+
+router.post("/withdraw", [verifyToken], createWithdraw);
 
 router.delete("/delete/deposit/:id", [verifyToken], deleteDeposit);
 

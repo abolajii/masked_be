@@ -3,6 +3,7 @@ const {
   updateCapitalForUser,
   updateSignalForUser,
   createDailySignalForUser,
+  createWithdrawForUser,
 } = require("../helpers");
 const Signal = require("../model/Signal");
 const moment = require("moment");
@@ -386,6 +387,50 @@ exports.getAllWithdraws = async (req, res) => {
     res.json({ success: true, withdraw });
   } catch (error) {
     console.error(error);
+    res.status(500).json({ success: false, error: "Internal server error" });
+  }
+};
+
+exports.createWithdraw = async (req, res) => {
+  const user = req.user.id;
+  const { amount, date, whenWithdraw } = req.body;
+
+  if (!user || !amount) {
+    return res.status(400).json({
+      success: false,
+      error: "Missing required fields",
+    });
+  }
+
+  try {
+    const withdraw = await createWithdrawForUser(user, {
+      amount,
+      date,
+      whenWithdrawed: whenWithdraw,
+    });
+
+    if (!withdraw.success) {
+      return res.status(500).json({
+        success: false,
+        error: withdraw.error,
+      });
+    }
+
+    // const logged = await User.findOne({ _id: user });
+
+    if (whenWithdraw === "before-trade") {
+      // if (checkIfTodayIsSunday()) {
+      //   logged.weekly_capital -= amount;
+      // }
+    }
+
+    // logged.running_capital -= amount;
+
+    // await logged.save();
+
+    res.json({ success: true, withdraw });
+  } catch (e) {
+    console.error(e);
     res.status(500).json({ success: false, error: "Internal server error" });
   }
 };

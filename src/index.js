@@ -17,6 +17,10 @@ const cors = require("cors");
 const updateSignalsForAllUsers = require("./jobs");
 const Withdraw = require("./model/Withdraw");
 const { updateMissedSignals } = require("./utils");
+const {
+  TradingSchedule,
+  calculateDayProfits,
+} = require("./utils/tradingUtils");
 const app = express();
 
 mongoose.connect(process.env.MONGODB_URI, {
@@ -177,8 +181,8 @@ const data = {
   //   innocent: 405.91,
   // },
   running_capital: {
-    admin: 2687.61,
-    innocent: 427.82,
+    admin: 2711.26 + 118.66,
+    innocent: 431.58,
   },
 
   // widthdraw: {
@@ -189,6 +193,9 @@ const data = {
   //   },
   // },
 };
+
+// const result = calculateDayProfits(data.running_capital.innocent);
+// console.log(result);
 
 // const adminId = "67b1bc98d981de5d7bd00023";
 // const innocentId = "67b1bca8a00bacd62f1e30ed";
@@ -264,7 +271,24 @@ const getAllWithdraws = async () => {
 cron.schedule("35 14,19 * * *", updateSignalsForAllUsers);
 // updateSignalsForAllUsers();
 
-//
+// const withdraws = [
+//   {
+//     dateOfWithdraw: "2025-03-05", // March 5th
+//     amount: 200,
+//     whenWithdrawHappened: "before-trade",
+//   },
+//   {
+//     dateOfWithdraw: "2025-03-09", // March 15th
+//     amount: 150,
+//     whenWithdrawHappened: "inbetween-trade",
+//   },
+//   {
+//     dateOfWithdraw: "2025-03-14", // March 25th
+//     amount: 100,
+//     whenWithdrawHappened: "after-trade",
+//   },
+// ];
+
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

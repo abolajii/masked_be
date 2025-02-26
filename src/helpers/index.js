@@ -4,6 +4,7 @@ const Signal = require("../model/Signal");
 const User = require("../model/User");
 const Revenue = require("../model/Revenue");
 const Deposit = require("../model/Deposit");
+const Withdraw = require("../model/Withdraw");
 
 // Create a new user
 const createUser = async ({
@@ -304,6 +305,31 @@ const getRevenueForUser = async (user) => {
   }
 };
 
+const createWithdrawForUser = async (user, { amount, date, whenWithdraw }) => {
+  try {
+    const withdraw = new Withdraw({
+      user,
+      amount,
+      bonus,
+      whenWithdraw,
+      date,
+    });
+
+    await withdraw.save();
+
+    return {
+      success: true,
+      withdraw,
+    };
+  } catch (error) {
+    console.log(error);
+    return {
+      success: false,
+      error: error.message,
+    };
+  }
+};
+
 module.exports = {
   createUser,
   createDailySignalForUser,
@@ -313,4 +339,5 @@ module.exports = {
   createDepositForUser,
   deleteDepositForUser,
   getRevenueForUser,
+  createWithdrawForUser,
 };
