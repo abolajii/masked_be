@@ -2,27 +2,21 @@ const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
 require("dotenv").config();
+const cron = require("node-cron");
 
 const mongoose = require("mongoose");
-// const { createUser, createDailySignalForUser } = require("./helpers");
 const User = require("./model/User");
 const Signal = require("./model/Signal");
 const Deposit = require("./model/Deposit");
 const Revenue = require("./model/Revenue");
-// const {
-//   localUpdateCapital,
-//   localGetSignalsForTheDay,
-// } = require("./controller/accountController");
+
 const authRoute = require("./routes/authRoute");
 const accountRoute = require("./routes/accountRoute");
-
 const cors = require("cors");
-const {
-  localAddDeposit,
-  localUpdateCapital,
-} = require("./controller/accountController");
-const { createUser } = require("./helpers");
+
+const updateSignalsForAllUsers = require("./jobs");
 const Withdraw = require("./model/Withdraw");
+const { updateMissedSignals } = require("./utils");
 const app = express();
 
 mongoose.connect(process.env.MONGODB_URI, {
@@ -59,34 +53,6 @@ app.get("/", (req, res) => {
   res.json({ success: true, message: "Server is running" });
 });
 
-const deleteAllUsers = async () => {
-  await User.deleteMany();
-  await Signal.deleteMany();
-  await Deposit.deleteMany();
-  await Revenue.deleteMany();
-
-  console.log("All data deleted");
-};
-
-const AllUsers = async () => {
-  const users = await User.find();
-  const signals = await Signal.find();
-
-  // console.log(users);
-  // console.log(signals);
-};
-
-// createDailySignalForUser(innocenctId);
-
-// localGetSignalsForTheDay();
-
-// localAddDeposit({
-//   amount: 8.1089,
-//   date: new Date(),
-//   bonus: 0,
-//   whenDeposited: "before-trade",
-// });
-
 const d1 = {
   username: "admin",
   email: "admin@god.com",
@@ -109,19 +75,6 @@ const d2 = {
 
 const adminId = "67b1bc98d981de5d7bd00023";
 const innocentId = "67b1bca8a00bacd62f1e30ed";
-
-// localAddDeposit({
-//   amount: 8.1089,
-//   date: new Date("2022-02-01"),
-//   bonus: 0,
-//   whenDeposited: "before-trade",
-//   user: adminId,
-// });
-
-const findOneAndUpdate = async (id) => {
-  const user = await Deposit.deleteMany({ user: adminId });
-  console.log(user);
-};
 
 // findOneAndUpdate();
 // const createRevenueForUsers = async () => {
@@ -220,21 +173,21 @@ const data = {
   //   innocent: 405.91,
   // },
   // monthly_capital: {
-  //   admin: 2549.97,
+  //   admin: 2664.97,
   //   innocent: 405.91,
   // },
-  // running_capital: {
-  //   admin: 700.92,
-  //   innocent: 420.39,
-  // },
-
-  widthdraw: {
-    admin: {
-      amount: 700,
-      date: "2025-03-09",
-      whenWithdraw: "inbetween-trade",
-    },
+  running_capital: {
+    admin: 2687.61,
+    innocent: 427.82,
   },
+
+  // widthdraw: {
+  //   admin: {
+  //     amount: 700,
+  //     date: "2025-03-09",
+  //     whenWithdraw: "inbetween-trade",
+  //   },
+  // },
 };
 
 // const adminId = "67b1bc98d981de5d7bd00023";
@@ -303,8 +256,13 @@ const getAllWithdraws = async () => {
   console.log("All withdrawals:", withdrawals);
 };
 
-getAllWithdraws();
+// getAllWithdraws();
 // createWithdrawForUser(adminId);
+
+// updateMissedSignals();
+
+cron.schedule("35 14,19 * * *", updateSignalsForAllUsers);
+// updateSignalsForAllUsers();
 
 //
 const PORT = process.env.PORT || 3001;
