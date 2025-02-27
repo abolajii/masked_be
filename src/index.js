@@ -17,6 +17,7 @@ const cors = require("cors");
 const updateSignalsForAllUsers = require("./jobs");
 const Withdraw = require("./model/Withdraw");
 const { updateMissedSignals } = require("./utils");
+
 const {
   TradingSchedule,
   calculateDayProfits,
@@ -61,10 +62,11 @@ app.get("/api/cron", (req, res) => {
 });
 
 // ✅ Example cron job function
-function runCronJob() {
-  console.log("Running scheduled task...");
-  // Add your actual task logic here (e.g., database updates)
+async function runCronJob() {
+  await updateSignalsForAllUsers();
 }
+
+runCronJob();
 
 app.get("/", (req, res) => {
   res.json({ success: true, message: "Server is running" });
