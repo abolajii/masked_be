@@ -53,6 +53,19 @@ app.use(express.json());
 app.use("/api/v1", authRoute);
 app.use("/api/v1", accountRoute);
 
+// ✅ Define the cron job route
+app.get("/api/cron", (req, res) => {
+  console.log("Cron job triggered at:", new Date().toLocaleString());
+  runCronJob();
+  res.json({ message: "Cron job executed successfully!" });
+});
+
+// ✅ Example cron job function
+function runCronJob() {
+  console.log("Running scheduled task...");
+  // Add your actual task logic here (e.g., database updates)
+}
+
 app.get("/", (req, res) => {
   res.json({ success: true, message: "Server is running" });
 });

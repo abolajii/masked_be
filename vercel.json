@@ -15,5 +15,8 @@
       "schedule": "40 9 * * *"
     }
   ],
-  "routes": [{ "src": "/(.*)", "dest": "/src/index.js" }]
+  "routes": [
+    { "src": "/api/cron", "dest": "/src/index.js" },
+    { "src": "/(.*)", "dest": "/src/index.js" }
+  ]
 }
