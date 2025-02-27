@@ -181,8 +181,8 @@ const data = {
   //   innocent: 405.91,
   // },
   running_capital: {
-    admin: 2711.26 + 118.66,
-    innocent: 431.58,
+    admin: 2854.82,
+    innocent: 435.51,
   },
 
   // widthdraw: {
