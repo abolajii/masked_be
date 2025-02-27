@@ -1,19 +1,12 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "src/index.js",
-      "use": "@vercel/node",
-      "config": {
-        "maxLambdaSize": "50mb"
-      }
-    }
-  ],
   "crons": [
     {
       "path": "/api/cron",
       "schedule": "20 9 * * *"
     }
   ],
-  "routes": [{ "src": "/(.*)", "dest": "/src/index.js" }]
+  "build": {
+    "src": "src/index.js",
+    "use": "@vercel/node"
+  }
 }
