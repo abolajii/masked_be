@@ -240,7 +240,7 @@ const updateUsers = async () => {
   console.log("Users updated successfully");
 };
 
-// updateUsers();
+// updateUsers();3
 
 // getRevenueForUser(adminId);
 
