@@ -9,5 +9,12 @@
       }
     }
   ],
+
+  "crons": [
+    {
+      "path": "/api/cron",
+      "schedule": "35 14,19 * * *"
+    }
+  ],
   "routes": [{ "src": "/(.*)", "dest": "/src/index.js" }]
 }
