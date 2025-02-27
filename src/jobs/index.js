@@ -49,7 +49,6 @@ const updateSignalsForAllUsers = async () => {
 
     // Find signals that are "not-started" for the current time window
     const signals = await Signal.find({
-      date: formattedDate,
       status: "not-started",
       time: timeZone,
     });

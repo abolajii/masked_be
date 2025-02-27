@@ -196,8 +196,8 @@ const data = {
   //   innocent: 405.91,
   // },
   running_capital: {
-    admin: 2854.82,
-    innocent: 435.51,
+    admin: 2879.94,
+    innocent: 435.51 + 3.83,
   },
 
   // widthdraw: {
@@ -255,7 +255,7 @@ const updateUsers = async () => {
   console.log("Users updated successfully");
 };
 
-// updateUsers();3
+updateUsers();
 
 // getRevenueForUser(adminId);
 
