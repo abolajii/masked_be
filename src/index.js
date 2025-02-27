@@ -255,7 +255,7 @@ const updateUsers = async () => {
   console.log("Users updated successfully");
 };
 
-updateUsers();
+// updateUsers();
 
 // getRevenueForUser(adminId);
 
