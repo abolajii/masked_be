@@ -308,11 +308,11 @@ exports.addDeposit = async (req, res) => {
       }
     }
 
-    logged.running_capital += Number(amount);
+    // logged.running_capital += Number(amount);
 
-    await logged.save();
+    // await logged.save();
 
-    console.log(logged, amount);
+    // console.log(logged, amount);
 
     res.json({ success: true, deposit });
   } catch (error) {

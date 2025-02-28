@@ -273,6 +273,11 @@ const deleteDepositForUser = async (user, signalId) => {
       throw new Error("Deposit not found");
     }
 
+    const userD = await User.findById(user);
+
+    userD.running_capital -= deposit.amount;
+    await userD.save();
+
     console.log(deposit);
 
     return {

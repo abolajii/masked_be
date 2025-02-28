@@ -22,13 +22,6 @@ const calculateProfit = (recentCapital) => {
  */
 const updateSignalsForAllUsers = async () => {
   try {
-    const now = new Date();
-    const formattedDate = now.toISOString().split("T")[0]; // Get current date YYYY-MM-DD
-
-    // const allSignals = await Signal.find({});
-
-    // console.log(allSignals);
-
     // Determine which time window we're in
     const currentHour = moment().hour();
     const isWithinMorningWindow = currentHour === 14;

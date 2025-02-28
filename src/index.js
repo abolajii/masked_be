@@ -2,7 +2,7 @@ const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
 require("dotenv").config();
-const cron = require("node-cron");
+const moment = require("moment");
 
 const mongoose = require("mongoose");
 const User = require("./model/User");
@@ -16,12 +16,13 @@ const cors = require("cors");
 
 const updateSignalsForAllUsers = require("./jobs");
 const Withdraw = require("./model/Withdraw");
-const { updateMissedSignals } = require("./utils");
+const { updateMissedSignals, calculateProfit } = require("./utils");
 
 const {
   TradingSchedule,
   calculateDayProfits,
 } = require("./utils/tradingUtils");
+const { updateSignalForUser, updateCapitalForUser } = require("./helpers");
 const app = express();
 
 mongoose.connect(process.env.MONGODB_URI, {
@@ -63,10 +64,96 @@ app.get("/api/cron", (req, res) => {
 
 // ✅ Example cron job function
 async function runCronJob() {
-  await updateSignalsForAllUsers();
+  try {
+    const currentHour = moment().hour();
+    const isWithinMorningWindow = currentHour === 14;
+    const isWithinEveningWindow = currentHour === 19;
+
+    // Skip if we're not in either time window
+    if (!isWithinMorningWindow && !isWithinEveningWindow) {
+      console.log("Not within scheduled signal window, skipping update");
+      return;
+    }
+
+    // Determine the current time window for the signal
+    const timeZone = isWithinMorningWindow
+      ? `${moment().format("YYYY-MM-DD")} 14:00 - 14:30`
+      : `${moment().format("YYYY-MM-DD")} 19:00 - 19:30`;
+
+    console.log(`Processing signals for time window: ${timeZone}`);
+
+    const signals = await Signal.find({
+      status: "not-started",
+      // time: timeZone, // Uncomment if you want to filter by timeZone
+    });
+
+    console.log(`Found ${signals.length} signals to process`);
+
+    for (const signal of signals) {
+      const user = await User.findById(signal.user);
+      if (!user) {
+        console.log(`User not found for signal ${signal._id}`);
+        continue;
+      }
+
+      const profitCalculation = calculateProfit(user.running_capital);
+      console.log(`User: ${user._id}, Profit calculation:`, profitCalculation);
+
+      const updatedSignal = await updateSignalForUser(user._id, {
+        signalId: signal._id,
+        status: "completed",
+        traded: true,
+        startingCapital: user.running_capital,
+        finalCapital: profitCalculation.balanceAfterTrade,
+        profit: profitCalculation.profitFromTrade,
+      });
+
+      if (!updatedSignal.success) {
+        console.error(
+          `Failed to update signal for user ${user._id}: ${updatedSignal.error}`
+        );
+        continue;
+      }
+
+      const updatedCapital = await updateCapitalForUser(user._id, {
+        running_capital: parseFloat(profitCalculation.balanceAfterTrade),
+      });
+
+      if (!updatedCapital.success) {
+        console.error(
+          `Failed to update capital for user ${user._id}: ${updatedCapital.error}`
+        );
+      } else {
+        console.log(`Successfully processed signal for user ${user._id}`);
+      }
+
+      // Get current month name for revenue tracking
+      const month = moment().format("MMMM"); // This will give month names like January, February, etc.
+
+      // Update revenue record for the current month
+      await Revenue.findOneAndUpdate(
+        { user: user._id, month },
+        {
+          total_revenue: parseFloat(profitCalculation.balanceAfterTrade),
+        },
+        { upsert: true } // Create if it doesn't exist
+      );
+
+      console.log(
+        `Updated revenue record for user ${user._id} for month: ${month}`
+      );
+    }
+
+    console.log("Finished processing all signals");
+  } catch (error) {
+    console.error("Error in runCronJob:", error);
+  }
 }
 
-runCronJob();
+// const res = calculateProfit(443.08);
+// console.log(res);
+
+// runCronJob();
 
 app.get("/", (req, res) => {
   res.json({ success: true, message: "Server is running" });
@@ -196,8 +283,8 @@ const data = {
   //   innocent: 405.91,
   // },
   running_capital: {
-    admin: 2879.94,
-    innocent: 435.51 + 3.83,
+    admin: 2930.85,
+    innocent: 446.98,
   },
 
   // widthdraw: {
@@ -220,42 +307,58 @@ const updateUsers = async () => {
 
   //
 
-  await Revenue.findOneAndUpdate(
-    { user: adminId, month: "February" },
-    {
-      // weekly_capital: data.weekly_capital.admin,
-      // monthly_capital: data.monthly_capital.admin,
-      total_revenue: data.running_capital.admin,
-    }
-  );
-
-  await Revenue.findOneAndUpdate(
-    { user: innocentId, month: "February" },
-    {
-      // weekly_capital: data.weekly_capital.admin,
-      // monthly_capital: data.monthly_capital.admin,
-      total_revenue: data.running_capital.innocent,
-    }
-  );
-
-  // Update admin
-  await User.findByIdAndUpdate(adminId, {
-    // weekly_capital: data.weekly_capital.admin,
-    // monthly_capital: data.monthly_capital.admin,
-    running_capital: data.running_capital.admin,
+  const signals = await Signal.find({
+    user: { $in: [adminId, innocentId] },
+    title: "Signal 2",
+    time: `2025-02-28 19:00 - 19:30`,
   });
 
-  // Update innocent
-  await User.findByIdAndUpdate(innocentId, {
-    // weekly_capital: data.weekly_capital.innocent,
-    // monthly_capital: data.monthly_capital.innocent,
-    running_capital: data.running_capital.innocent,
+  signals.map(async (s) => {
+    s.startingCapital = 0;
+    s.finalCapital = 0;
+    s.traded = false;
+    s.profit = 0;
+    s.status = "not-started";
+
+    await s.save();
   });
+
+  // console.log(signals);
+
+  // await Revenue.findOneAndUpdate(
+  //   { user: adminId, month: "February" },
+  //   {
+  //     total_revenue: data.running_capital.admin,
+  //   }
+  // );
+
+  // await Revenue.findOneAndUpdate(
+  //   { user: innocentId, month: "February" },
+  //   {
+  //     // weekly_capital: data.weekly_capital.admin,
+  //     // monthly_capital: data.monthly_capital.admin,
+  //     total_revenue: data.running_capital.innocent,
+  //   }
+  // );
+
+  // // Update admin
+  // await User.findByIdAndUpdate(adminId, {
+  // weekly_capital: data.weekly_capital.admin,
+  // monthly_capital: data.monthly_capital.admin,
+  // running_capital: data.running_capital.admin,
+  // });
+
+  // // Update innocent
+  // await User.findByIdAndUpdate(innocentId, {
+  //   // weekly_capital: data.weekly_capital.innocent,
+  //   // monthly_capital: data.monthly_capital.innocent,
+  //   running_capital: data.running_capital.innocent,
+  // });
 
   console.log("Users updated successfully");
 };
 
-// updateUsers();
+updateUsers();
 
 // getRevenueForUser(adminId);
 
@@ -267,38 +370,69 @@ const getAllWithdraws = async () => {
 
 // getAllWithdraws();
 // createWithdrawForUser(adminId);
+// updateUsers();
 
 // updateMissedSignals();
 
-const deleteWithdrawForUser = async (user, withdrawid) => {
-  try {
-    const withdraw = await Withdraw.findOneAndDelete({
-      amount: withdrawid,
-      user: user,
-    });
+// const deleteWithdrawForUser = async (user, withdrawid) => {
+//   try {
+//     const withdraw = await Withdraw.findOneAndDelete({
+//       amount: withdrawid,
+//       user: user,
+//     });
 
-    if (!withdraw) {
-      throw new Error("Withdrawal not found");
-    }
+//     if (!withdraw) {
+//       throw new Error("Withdrawal not found");
+//     }
 
-    console.log(withdraw);
+//     console.log(withdraw);
 
-    return {
-      success: true,
-      withdraw,
-    };
-  } catch (error) {
-    console.log(error);
-    return {
-      success: false,
-      error: error.message,
-    };
-  }
-};
+//     return {
+//       success: true,
+//       withdraw,
+//     };
+//   } catch (error) {
+//     console.log(error);
+//     return {
+//       success: false,
+//       error: error.message,
+//     };
+//   }
+// };
 
-// deleteWithdrawForUser(adminId, 89);
+// const listUserProfit = async (user) => {
+//   // Find all signals for this user with time greater than "2024-02-19 19:00 - 19:30"
+//   const targetTimeString = "2025-02-19 14:00 - 14:30";
 
-cron.schedule("35 14,19 * * *", updateSignalsForAllUsers);
+//   const signalProfit = await Signal.find({
+//     user: adminId,
+//     time: { $gt: targetTimeString },
+//   });
+
+//   // Calculate total profit
+//   let totalProfit = 0;
+
+//   if (signalProfit.length > 0) {
+//     totalProfit = signalProfit.reduce((sum, signal) => {
+//       return sum + (signal.profit || 0);
+//     }, 0);
+//   }
+
+//   console.log({
+//     totalProfit,
+//     signalCount: signalProfit.length,
+//     signals: signalProfit,
+//   });
+
+//   return {
+//     user,
+//     totalProfit,
+//     signalCount: signalProfit.length,
+//     signals: signalProfit,
+//   };
+// };
+
+// listUserProfit();
 // updateSignalsForAllUsers();
 
 // const withdraws = [
