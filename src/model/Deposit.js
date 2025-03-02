@@ -13,6 +13,11 @@ const depositSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
+  capital: {
+    type: Number,
+    required: true,
+    default: 0,
+  },
   bonus: {
     type: Number,
     default: 0,

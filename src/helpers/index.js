@@ -236,7 +236,7 @@ const updateSignalForUser = async (
 
 const createDepositForUser = async (
   user,
-  { amount, date, bonus, whenDeposited }
+  { amount, date, bonus, whenDeposited, capital }
 ) => {
   try {
     const deposit = new Deposit({
@@ -245,6 +245,7 @@ const createDepositForUser = async (
       bonus,
       whenDeposited,
       date,
+      capital,
     });
 
     await deposit.save();

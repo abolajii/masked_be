@@ -273,6 +273,7 @@ exports.addDeposit = async (req, res) => {
   try {
     const user = req.user.id;
     const { amount, date, bonus, tradeTime } = req.body;
+    const loggedInuser = await User.findById(req.user.id);
 
     if (!user || !amount) {
       return res.status(400).json({
@@ -282,6 +283,7 @@ exports.addDeposit = async (req, res) => {
     }
 
     const deposit = await createDepositForUser(user, {
+      capital: loggedInuser.running_capital,
       amount,
       date,
       bonus,

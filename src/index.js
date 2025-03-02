@@ -62,6 +62,72 @@ app.get("/api/cron", (req, res) => {
   res.json({ message: "Cron job executed successfully!" });
 });
 
+const getAllDeposits = async () => {
+  const deposits = await Deposit.find({});
+  console.log(deposits);
+
+  for (const deposit of deposits) {
+    const depositDate = new Date(deposit.date).toISOString().split("T")[0];
+
+    const depositFirstSignal = await Signal.find({
+      time: `${depositDate} 14:00 - 14:30`,
+    });
+
+    const depositSecondSignal = await Signal.find({
+      time: `${depositDate} 19:00 - 19:30`,
+    });
+
+    let capitalToUpdate = 0;
+
+    // Determine which capital value to use based on whenDeposited
+    if (deposit.whenDeposited === "before-trade") {
+      // Find the first signal for this user
+      const userFirstSignal = depositFirstSignal.find(
+        (signal) => signal.user.toString() === deposit.user.toString()
+      );
+
+      if (userFirstSignal) {
+        capitalToUpdate = userFirstSignal.startingCapital - deposit.amount;
+      }
+    } else if (deposit.whenDeposited === "inbetween-trade") {
+      // Find the first signal for this user
+      const userFirstSignal = depositFirstSignal.find(
+        (signal) => signal.user.toString() === deposit.user.toString()
+      );
+
+      if (userFirstSignal) {
+        capitalToUpdate = userFirstSignal.finalCapital - deposit.amount;
+      }
+    } else if (deposit.whenDeposited === "after-trade") {
+      // Find the second signal for this user
+      const userSecondSignal = depositSecondSignal.find(
+        (signal) => signal.user.toString() === deposit.user.toString()
+      );
+
+      if (userSecondSignal) {
+        capitalToUpdate = userSecondSignal.finalCapital - deposit.amount;
+      }
+    }
+
+    // Update the deposit with the calculated capital
+    if (capitalToUpdate > 0) {
+      await Deposit.findByIdAndUpdate(
+        deposit._id,
+        { capital: capitalToUpdate },
+        { new: true }
+      );
+
+      console.log(
+        `Updated deposit ${deposit._id} with capital: ${capitalToUpdate}`
+      );
+    } else {
+      console.log(`No matching signal found for deposit ${deposit._id}`);
+    }
+  }
+};
+
+// getAllDeposits();
+
 // ✅ Example cron job function
 async function runCronJob() {
   try {
@@ -291,8 +357,8 @@ const data = {
   //   innocent: 405.91,
   // },
   running_capital: {
-    admin: 2956.64,
-    innocent: 571.13,
+    admin: calculateProfit(3344.84).balanceAfterTrade,
+    innocent: calculateProfit(667.32).balanceAfterTrade,
   },
 
   // widthdraw: {
@@ -316,16 +382,16 @@ const updateUsers = async () => {
   //
 
   const signals = await Signal.find({
-    user: { $in: [adminId, innocentId] },
+    user: innocentId,
     time: `2025-03-02 14:00 - 14:30`,
   });
 
   signals.map(async (s) => {
-    // s.startingCapital = 0;
-    s.finalCapital = 0;
-    s.traded = false;
-    s.profit = 0;
-    s.status = "not-started";
+    s.startingCapital = 667.32;
+    s.finalCapital = calculateProfit(s.startingCapital).balanceAfterTrade;
+    s.traded = true;
+    s.profit = calculateProfit(s.startingCapital).profitFromTrade;
+    s.status = "completed";
 
     await s.save();
   });
@@ -333,14 +399,14 @@ const updateUsers = async () => {
   // console.log(signals);
 
   await Revenue.findOneAndUpdate(
-    // { user: adminId, month: "February" },
+    // { user: adminId, month: "March" },
     {
       // total_revenue: data.running_capital.admin,
     }
   );
 
   await Revenue.findOneAndUpdate(
-    // { user: innocentId, month: "February" },
+    // { user: innocentId, month: "March" },
     {
       // weekly_capital: data.weekly_capital.admin,
       //     // monthly_capital: data.monthly_capital.admin,
@@ -349,18 +415,18 @@ const updateUsers = async () => {
   );
 
   // // Update admin
-  // await User.findByIdAndUpdate(adminId, {
-  // weekly_capital: data.weekly_capital.admin,
-  // monthly_capital: data.monthly_capital.admin,
-  // running_capital: data.running_capital.admin,
-  // });
+  await User.findByIdAndUpdate(adminId, {
+    // weekly_capital: data.weekly_capital.admin,
+    // monthly_capital: data.monthly_capital.admin,
+    // running_capital: data.running_capital.admin,
+  });
 
   // // Update innocent
-  // await User.findByIdAndUpdate(innocentId, {
-  // weekly_capital: data.weekly_capital.innocent,
-  // monthly_capital: data.monthly_capital.innocent,
-  // running_capital: data.running_capital.innocent,
-  // });
+  await User.findByIdAndUpdate(innocentId, {
+    // weekly_capital: data.weekly_capital.innocent,
+    // monthly_capital: data.monthly_capital.innocent,
+    // running_capital: data.running_capital.innocent,
+  });
 
   console.log("Users updated successfully");
 };
