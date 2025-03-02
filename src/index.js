@@ -71,7 +71,11 @@ async function runCronJob() {
 
     // Skip if we're not in either time window
     if (!isWithinMorningWindow && !isWithinEveningWindow) {
-      console.log("Not within scheduled signal window, skipping update");
+      console.log(
+        "Not within scheduled signal window, skipping update",
+        currentHour
+      );
+      // console.log
       return;
     }
 
@@ -278,13 +282,17 @@ const data = {
   //   admin: 2549.97,
   //   innocent: 405.91,
   // },
+  // weekly_capital: {
+  //   admin: 3344.84,
+  //   innocent: 667.32,
+  // },
   // monthly_capital: {
   //   admin: 2664.97,
   //   innocent: 405.91,
   // },
   running_capital: {
-    admin: 2930.85,
-    innocent: 446.98,
+    admin: 2956.64,
+    innocent: 571.13,
   },
 
   // widthdraw: {
@@ -309,12 +317,11 @@ const updateUsers = async () => {
 
   const signals = await Signal.find({
     user: { $in: [adminId, innocentId] },
-    title: "Signal 2",
-    time: `2025-02-28 19:00 - 19:30`,
+    time: `2025-03-02 14:00 - 14:30`,
   });
 
   signals.map(async (s) => {
-    s.startingCapital = 0;
+    // s.startingCapital = 0;
     s.finalCapital = 0;
     s.traded = false;
     s.profit = 0;
@@ -325,21 +332,21 @@ const updateUsers = async () => {
 
   // console.log(signals);
 
-  // await Revenue.findOneAndUpdate(
-  //   { user: adminId, month: "February" },
-  //   {
-  //     total_revenue: data.running_capital.admin,
-  //   }
-  // );
+  await Revenue.findOneAndUpdate(
+    // { user: adminId, month: "February" },
+    {
+      // total_revenue: data.running_capital.admin,
+    }
+  );
 
-  // await Revenue.findOneAndUpdate(
-  //   { user: innocentId, month: "February" },
-  //   {
-  //     // weekly_capital: data.weekly_capital.admin,
-  //     // monthly_capital: data.monthly_capital.admin,
-  //     total_revenue: data.running_capital.innocent,
-  //   }
-  // );
+  await Revenue.findOneAndUpdate(
+    // { user: innocentId, month: "February" },
+    {
+      // weekly_capital: data.weekly_capital.admin,
+      //     // monthly_capital: data.monthly_capital.admin,
+      // total_revenue: data.running_capital.innocent,
+    }
+  );
 
   // // Update admin
   // await User.findByIdAndUpdate(adminId, {
@@ -350,15 +357,15 @@ const updateUsers = async () => {
 
   // // Update innocent
   // await User.findByIdAndUpdate(innocentId, {
-  //   // weekly_capital: data.weekly_capital.innocent,
-  //   // monthly_capital: data.monthly_capital.innocent,
-  //   running_capital: data.running_capital.innocent,
+  // weekly_capital: data.weekly_capital.innocent,
+  // monthly_capital: data.monthly_capital.innocent,
+  // running_capital: data.running_capital.innocent,
   // });
 
   console.log("Users updated successfully");
 };
 
-updateUsers();
+// updateUsers();
 
 // getRevenueForUser(adminId);
 
